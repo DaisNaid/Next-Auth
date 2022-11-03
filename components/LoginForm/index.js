@@ -1,5 +1,6 @@
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Link from 'next/link';
 
 function LoginForm() {
   return (
@@ -22,7 +23,7 @@ function LoginForm() {
           className="text-center"
         />
       </Form.Group>
-      <div className="text-center">
+      <div className="text-center mb-6">
         <Button
           variant="primary"
           className="bg-zinc text-black font-semibold text-lg rounded-md py-1 px-6"
@@ -30,6 +31,9 @@ function LoginForm() {
           Login
         </Button>
       </div>
+      <span className="text-center text-sm p-4 ml-4">
+        No login details? <Link href="/auth/signup">Create Account</Link>
+      </span>
     </Form>
   );
 }
