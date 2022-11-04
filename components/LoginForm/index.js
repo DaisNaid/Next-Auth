@@ -1,32 +1,35 @@
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import axios from 'axios';
 import getError from '../../utils/getError';
 import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-bootstrap';
+import { useState } from 'react';
+import { useMutation } from 'react-query';
 
 function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [userDetails, setUserDetails] = useState([]);
+  const payload = { username, password };
+  //const [userDetails, setUserDetails] = useState([]);
 
-  const userID = userDetails.id;
+  //const userID = userDetails.id;
 
   const router = useRouter();
 
-  const loginHandler = async (e) => {
+  const postLoginDetails = async () => {
     e.preventDefault();
     try {
       const { data } = await axios.post('/api/login', { username, password });
-      setUserDetails(data);
       router.push('/auth/loggedIn');
+      return data;
     } catch (err) {
       alert(getError(err));
     }
   };
+
+  const { mutate } = useMutation(postLoginDetails);
 
   return (
     <Form className="rounded p-4 bg-darkanime m-16">
@@ -55,7 +58,7 @@ function LoginForm() {
         <Button
           variant="primary"
           type="submit"
-          onClick={loginHandler}
+          onClick={() => mutate({ username, password })}
           className="bg-zinc text-black font-semibold text-lg rounded-md py-1 px-6"
         >
           Login
