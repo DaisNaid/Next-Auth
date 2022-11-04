@@ -1,7 +1,9 @@
+import axios from 'axios';
 import Head from 'next/head';
 import Link from 'next/link';
+import useAxios from '../hooks/useAxios';
 
-export default function Home() {
+export default function Home({ users }) {
   return (
     <div className="px-8">
       <Head>
@@ -11,6 +13,9 @@ export default function Home() {
       <main className="min-h-full py-16 flex flex-1 flex-col justify-center items-center gap-12">
         <h1 className="text-red-500 text-center text-3xl pt-8">Welcome</h1>
         <Link href="/auth/login">Proceed</Link>
+        {users?.map((user) => (
+          <li key={user?.id}>{user?.username}</li>
+        ))}
       </main>
 
       <footer className="flex flex-1 py-8 border-solid border-t-2 border-[#eaeaea] justify-center items-center">
