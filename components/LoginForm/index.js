@@ -1,35 +1,35 @@
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Link from 'next/link';
-import axios from 'axios';
-import getError from '../../utils/getError';
 import { useRouter } from 'next/router';
 import { ToastContainer } from 'react-bootstrap';
 import { useState } from 'react';
-import { useMutation } from 'react-query';
+import useAxiosPost from '../../hooks/useAxiosPost';
 
 function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const payload = { username, password };
-  //const [userDetails, setUserDetails] = useState([]);
-
-  //const userID = userDetails.id;
-
+  const login_API_URL = '/api/login';
   const router = useRouter();
+  const { data, mutate, isSuccess } = useAxiosPost(login_API_URL, payload);
 
-  const postLoginDetails = async () => {
+  const loginHandler = async (e) => {
     e.preventDefault();
-    try {
-      const { data } = await axios.post('/api/login', { username, password });
-      router.push('/auth/loggedIn');
-      return data;
-    } catch (err) {
-      alert(getError(err));
-    }
+    mutate();
   };
 
-  const { mutate } = useMutation(postLoginDetails);
+  if (isSuccess) {
+    if (typeof data === 'object') {
+      typeof window !== 'undefined' &&
+        localStorage.setItem('userInfo', JSON.stringify(data));
+      const { id } = data;
+      router.push(`/auth/loggedIn/${id}`);
+    } else {
+      alert(data);
+      window.location.reload();
+    }
+  }
 
   return (
     <Form className="rounded p-4 bg-darkanime m-16">
@@ -52,13 +52,14 @@ function LoginForm() {
           required
           className="text-center"
           onChange={(e) => setPassword(e.target.value)}
+          maxLength="4"
         />
       </Form.Group>
       <div className="text-center mb-6">
         <Button
           variant="primary"
           type="submit"
-          onClick={() => mutate({ username, password })}
+          onClick={loginHandler}
           className="bg-zinc text-black font-semibold text-lg rounded-md py-1 px-6"
         >
           Login

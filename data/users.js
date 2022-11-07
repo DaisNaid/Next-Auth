@@ -14,7 +14,7 @@ const users = [
     password: bcrypt.hashSync('9999'),
   },
   {
-    id: 1,
+    id: 3,
     email: 'iamnottryve@gmail.com',
     username: 'Kirai',
     password: bcrypt.hashSync('9999'),

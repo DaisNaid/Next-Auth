@@ -3,31 +3,34 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Link from 'next/link';
 import { useState } from 'react';
-import getError from '../../utils/getError';
 import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
+import useAxiosPost from '../../hooks/useAxiosPost';
 
 function SignUpForm() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [re_password, setRe_Password] = useState('');
-
+  const payload = { email, username, password };
+  const signup_API_URL = '/api/signup';
   const router = useRouter();
+  const { data, mutate, isSuccess } = useAxiosPost(signup_API_URL, payload);
+  const isUnequalPassword = password !== re_password;
 
   const signupHandler = async (e) => {
     e.preventDefault();
-    try {
-      const { data } = await axios.post('/api/signup', {
-        email,
-        username,
-        password,
-      });
-      toast.success('User created successfully');
-    } catch (err) {
-      alert(getError(err));
-    }
+    mutate();
+    alert('User created successfully');
   };
+
+  if (isSuccess) {
+    const newUserInfo = data?.newUserInfo;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('userInfo', JSON.stringify(newUserInfo));
+    }
+    const { id } = newUserInfo;
+    router.push(`/auth/loggedIn/${id}`);
+  }
 
   return (
     <Form className="rounded p-4 bg-darkanime m-16 justify-center items-center justify-items-center">
@@ -59,8 +62,12 @@ function SignUpForm() {
           required
           className="text-center"
           onChange={(e) => setPassword(e.target.value)}
+          maxLength="4"
         />
       </Form.Group>
+      {isUnequalPassword && (
+        <div className="text-red-500 mb-6">Passwords are different!</div>
+      )}
       <Form.Group
         className="flex flex-1 gap-4 mb-6 ml-0"
         controlId="re_password"
@@ -72,19 +79,23 @@ function SignUpForm() {
           required
           className="text-center"
           onChange={(e) => setRe_Password(e.target.value)}
+          maxLength="4"
         />
       </Form.Group>
-      <Button
-        variant="primary"
-        type="submit"
-        onClick={submitHandler}
-        className="bg-zinc text-black font-semibold text-lg rounded-md py-1 px-6"
-      >
-        Sign Up
-      </Button>
-      <span className="text-center p-20 text-sm ml-4">
-        Have an account? <Link href="/auth/login">Log In</Link>
-      </span>
+      <div className="flex flex-col flex-1 gap-6">
+        <Button
+          variant="primary"
+          type="submit"
+          onClick={signupHandler}
+          className="bg-zinc text-black font-semibold text-lg rounded-md py-1 px-6"
+          disabled={password !== '' && isUnequalPassword}
+        >
+          Sign Up
+        </Button>
+        <span className="text-center text-sm">
+          Have an account? <Link href="/auth/login">Log In</Link>
+        </span>
+      </div>
     </Form>
   );
 }

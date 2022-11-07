@@ -1,23 +1,44 @@
-import axios from 'axios';
+import Button from 'react-bootstrap/Button';
+import useAxiosGet from '../../hooks/useAxiosGet';
+import useGetUserInfo from '../../hooks/useGetUserInfo';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
-const url = 'http://localhost:5000/users';
+function ListUsers() {
+  const url = 'https://jsonplaceholder.typicode.com/users';
+  const { data } = useAxiosGet(url);
+  const router = useRouter();
 
-function ListUsers({ users }) {
+  const { userInfo } = useGetUserInfo();
+
   return (
     <>
-      <h1>List of Users: </h1>
-      {users.map((user) => (
-        <li key={user.id}>{user.username}</li>
-      ))}
+      <h1 className="text-center py-12 text-3xl">List of Users: </h1>
+      <div className="text-center">
+        {userInfo ? (
+          <div>
+            {data?.map((user) => (
+              <li key={user.id} className="list-none">
+                {user.username} || {user.email}
+              </li>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col flex-1 items-center gap-8">
+            <span>Please Login</span>
+            <Button
+              variant="primary"
+              type="submit"
+              onClick={() => router.push('/auth/login')}
+              className="bg-zinc text-black font-semibold text-lg rounded-md p-1"
+            >
+              Back to Login
+            </Button>
+          </div>
+        )}
+      </div>
     </>
   );
 }
 
 export default ListUsers;
-
-export async function getServerSideProps() {
-  const response = await axios.get(url);
-  const data = response.data;
-
-  return { props: { users: data } };
-}

@@ -3,10 +3,10 @@ import users from '../../../data/users';
 import { generateToken } from '../../../utils/generateToken';
 
 export default function handler(req, res) {
-  const username = req.body.username;
+  const { username, password } = req.body.payload;
   const user = users.find((user) => user.username === username);
   if (user) {
-    if (bcrypt.compareSync(req.body.password, user.password)) {
+    if (bcrypt.compareSync(password, user.password)) {
       res.send({
         id: user.id,
         email: user.email,

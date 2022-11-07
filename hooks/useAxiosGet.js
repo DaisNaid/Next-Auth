@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useQuery } from 'react-query';
 
-function useAxios({ dataURL }) {
+function useAxiosGet(dataURL) {
   return useQuery({
     queryKey: ['retrievedData'],
     queryFn: async () => {
@@ -11,4 +11,4 @@ function useAxios({ dataURL }) {
   });
 }
 
-export default useAxios;
+export default useAxiosGet;

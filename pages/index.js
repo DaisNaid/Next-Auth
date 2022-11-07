@@ -1,7 +1,5 @@
-import axios from 'axios';
 import Head from 'next/head';
 import Link from 'next/link';
-import useAxios from '../hooks/useAxios';
 
 export default function Home({ users }) {
   return (
